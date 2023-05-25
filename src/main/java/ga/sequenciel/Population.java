@@ -1,25 +1,21 @@
 package ga.sequenciel;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Population {
-    private static final int MAX_IND = 5;
     List<Individual> individuals = new ArrayList<>();
     Individual firstFinest;
     Individual secondFinest;
-    Random random = new Random(4);
+    Random random = new Random();
 
     public void initializePopulation() {
-        for (int i = 0; i < MAX_IND; i++) {
+        for (int i = 0; i < GAUtils.POPULATION_SIZE; i++) {
             individuals.add(new Individual());
         }
     }
 
     public void calculateIndividualFitness() {
-        for (int i = 0; i < MAX_IND; i++) {
+        for (int i = 0; i < GAUtils.POPULATION_SIZE; i++) {
             individuals.get(i).calculateFitness();
         }
     }
@@ -30,26 +26,18 @@ public class Population {
     }
 
     public void sortPopulation() {
-        Collections.sort(individuals);
+        Collections.sort(individuals,Collections.reverseOrder());
     }
 
     //croisement
     public void crossover() {
-        int pointCroisement = random.nextInt(MAX_IND-3);
-        pointCroisement+=2;
-        //System.out.println("___pointCroisement : "+pointCroisement);
+        int pointCroisement = random.nextInt(GAUtils.CHROMOSOME_SIZE-3);
         Individual individual1 = new Individual();
         Individual individual2 = new Individual();
-        String ind1="";
-        String ind2="";
         for (int i = 0; i < individual2.getGenes().length; i++) {
             individual1.getGenes()[i] = firstFinest.getGenes()[i];
-            ind1+=individual1.getGenes()[i];
             individual2.getGenes()[i] = secondFinest.getGenes()[i];
-            ind2+=individual2.getGenes()[i];
         }
-        //System.out.println("ind1 "+ind1);
-        //System.out.println("ind2 "+ind2);
 
         for (int i = 0; i < pointCroisement; i++) {
             individual1.getGenes()[i] = secondFinest.getGenes()[i];
@@ -57,23 +45,23 @@ public class Population {
         }
         individuals.set(individuals.size() - 1, individual1);
         individuals.set(individuals.size() - 2, individual2);
-        individual1.calculateFitness();
-        individual2.calculateFitness();
+
+        System.out.println(Arrays.toString(individual1.getGenes()));
+        System.out.println(Arrays.toString(individual2.getGenes()));
+
     }
 
     public void mutation() {
-        int index = random.nextInt(individuals.get(0).goal.length);
-        while(individuals.get(individuals.size() - 1).getFitness()[index] ==0){
-            index = random.nextInt(individuals.get(0).goal.length);
+        int index=random.nextInt(GAUtils.CHROMOSOME_SIZE);
+        /*while(individuals.get(individuals.size()-2).getGenes()[index]==GAUtils.SOLUTION.charAt(index)||individuals.get(individuals.size()-1).getGenes()[index]==GAUtils.SOLUTION.charAt(index)){
+            index=random.nextInt(GAUtils.CHROMOSOME_SIZE);
+        }*/
+        if (random.nextDouble()<GAUtils.MUTATION_PROB){
+            individuals.get(individuals.size()-1).getGenes()[index]=GAUtils.CHARACTERS.charAt(random.nextInt(GAUtils.CHARACTERS.length()));
         }
-        if (individuals.get(individuals.size() - 1).getFitness()[index] !=0){
-            char newAlpha=individuals.get(0).alphabet[random.nextInt(24)];
-            while(individuals.get(individuals.size() - 1).getGenes()[index]==newAlpha){
-                newAlpha=individuals.get(0).alphabet[random.nextInt(24)];
-            }
-            System.out.println(newAlpha+" "+individuals.get(individuals.size() - 1).getGenes()[index]);
-            individuals.get(individuals.size() - 1).getGenes()[index] = newAlpha;
-            individuals.get(individuals.size() - 1).calculateFitness();
+        index=random.nextInt(GAUtils.CHROMOSOME_SIZE);
+        if (random.nextDouble()<GAUtils.MUTATION_PROB){
+            individuals.get(individuals.size()-1).getGenes()[index]=GAUtils.CHARACTERS.charAt(random.nextInt(GAUtils.CHARACTERS.length()));
         }
     }
 

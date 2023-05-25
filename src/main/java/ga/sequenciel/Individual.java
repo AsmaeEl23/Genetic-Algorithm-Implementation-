@@ -4,67 +4,48 @@ import java.util.Random;
 
 public class Individual implements Comparable {
     //chromosome
-    char[] genes;
-    char[] goal= {'b','o','n','j','o','u','r'};
-    char[] alphabet={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-    private int[] fitness;
-    private int sumFitness=0;
+    private char genes[] = new char[GAUtils.CHROMOSOME_SIZE];
+    private int fitness;
 
-    public Individual(){
-        Random rnd=new Random();
-        genes=new char[goal.length];
-        fitness=new int[goal.length];
+    public Individual() {
+        Random rnd = new Random();
+        for (int i = 0; i < genes.length; i++) {
+            genes[i] = GAUtils.CHARACTERS.charAt(rnd.nextInt(GAUtils.CHARACTERS.length()));
+        }
+    }
 
-        for(int i = 0; i< goal.length; i++){
-            genes[i]=alphabet[rnd.nextInt(25)];
+    public void calculateFitness() {
+        fitness = 0;
+        for (int i = 0; i < genes.length; i++) {
+            if (genes[i] == GAUtils.SOLUTION.charAt(i))
+                fitness++;
         }
     }
-    public void calculateFitness(){
-        sumFitness=0;
-        for(int i = 0; i< genes.length; i++){
-            if(Math.abs(genes[i]-goal[i])!=0)
-                fitness[i]= 1;
-            else
-                fitness[i]= 0;
-            sumFitness+=fitness[i];
-        }
-    }
-    public void calculateFitness2(){
-        sumFitness=0;
-        for(int i = 0; i< genes.length; i++){
-            fitness[i]= Math.abs(genes[i]-goal[i]);
-            sumFitness+=fitness[i];
-        }
-    }
+
     @Override
     public int compareTo(Object o) {
-        Individual individual=(Individual) o;
+        Individual individual = (Individual) o;
 
-        if(this.sumFitness>individual.sumFitness)
+        if (this.fitness > individual.fitness)
             return 1;
-        else if (this.sumFitness<individual.sumFitness)
+        else if (this.fitness < individual.fitness)
             return -1;
         return 0;
-    }
-
-
-    public int[] getFitness() {
-        return fitness;
-    }
-
-    public void setGenes(char[] genes) {
-        this.genes = genes;
-    }
-
-    public void setFitness(int[] fitness) {
-        this.fitness = fitness;
     }
 
     public char[] getGenes() {
         return genes;
     }
 
-    public int getSumFitness() {
-        return sumFitness;
+    public void setGenes(char[] genes) {
+        this.genes = genes;
+    }
+
+    public int getFitness() {
+        return fitness;
+    }
+
+    public void setFitness(int fitness) {
+        this.fitness = fitness;
     }
 }
